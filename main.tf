@@ -17,6 +17,9 @@ module "jenkins_setup" {
 }
 
 
+### Make sure to un-comment these below lines after successfull installation and setup of jenkins
+
+
 # resource "null_resource" "run_jenkins" {
 #   depends_on = [module.jenkins_setup]
 

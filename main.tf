@@ -36,6 +36,6 @@ module "jenkins_setup" {
 
 # resource "jenkins_job" "example" {
 #   depends_on = [module.jenkins_setup]
-#   name       = "example-pipeline"
+#   name       = "poc-pipeline"
 #   template   = file("${path.module}/job.xml")
 # }

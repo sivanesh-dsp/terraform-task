@@ -44,3 +44,4 @@ sudo systemctl restart jenkins
 # Password for jenkins
 echo "Jenkins is installed. The initial admin password is:"
 sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword > /tmp/initialAdminPassword.txt

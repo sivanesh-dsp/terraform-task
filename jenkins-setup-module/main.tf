@@ -32,6 +32,21 @@ resource "null_resource" "download_jenkins" {
         command = "bash -x ${path.module}/install-jenkins.sh"
     }
 }
+data "local_file" "jenkins_initial_admin_password" {
+  filename = "/tmp/initialAdminPassword.txt"
+  depends_on = [null_resource.download_jenkins]
+}
+
+# Download SonarQube
+resource "null_resource" "download_sonarqube" {
+    depends_on = [null_resource.download_jenkins]
+    provisioner "local-exec" {
+        command = "chmod 777 ${path.module}/install-sonarqube.sh"
+    }
+    provisioner "local-exec" {
+        command = "sudo bash -x ${path.module}/install-sonarqube.sh"
+    }
+}
 
 # # deleting already running containers
 # resource "null_resource" "run_jenkins" {

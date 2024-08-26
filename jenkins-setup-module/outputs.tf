@@ -1,3 +1,4 @@
-output "docker_installed" {
-  value = "Docker installed and Jenkins downloaded"
+output "jenkins_initial_admin_password" {
+  value       = data.local_file.jenkins_initial_admin_password.content
+  description = "The initial admin password for Jenkins."
 }

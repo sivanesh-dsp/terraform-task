@@ -24,7 +24,7 @@ resource "null_resource" "install_docker" {
 
 # Download Jenkins 
 resource "null_resource" "download_jenkins" {
-    depends_on = [null_resource.install_docker]
+    depends_on = [null_resource.sonarqube-image]
     provisioner "local-exec" {
         command = "chmod 777 ${path.module}/install-jenkins.sh"
     }
@@ -38,35 +38,30 @@ data "local_file" "jenkins_initial_admin_password" {
 }
 
 # Download SonarQube
-resource "null_resource" "download_sonarqube" {
-    depends_on = [null_resource.download_jenkins]
-    provisioner "local-exec" {
-        command = "chmod 777 ${path.module}/install-sonarqube.sh"
-    }
-    provisioner "local-exec" {
-        command = "sudo bash -x ${path.module}/install-sonarqube.sh"
-    }
-}
-
-# # deleting already running containers
-# resource "null_resource" "run_jenkins" {
+# resource "null_resource" "download_sonarqube" {
 #     depends_on = [null_resource.download_jenkins]
-    
 #     provisioner "local-exec" {
-#       command = "docker system prune -f"
+#         command = "chmod 777 ${path.module}/install-sonarqube.sh"
+#     }
+#     provisioner "local-exec" {
+#         command = "sudo bash -x ${path.module}/install-sonarqube.sh"
 #     }
 # }
 
-# provider jenkins {
-#   server_url = "http://localhost:8080/" 
-#   username   = "admin"            
-#   password   = "admin"                             
-# }
-
-# # Configure Jenkins job for deployment
-# resource "jenkins_job" "example" {
-#   depends_on = [null_resource.download_jenkins]
-#   name        = "example-pipeline"
-#   template   = file("${path.module}/job.xml")
-# }
-
+# sonarqube docker image
+resource "null_resource" "sonarqube-image" {
+    depends_on = [null_resource.install_docker]
+    provisioner "local-exec" {
+        command = <<-EOF
+        sudo docker volume create sonarqube_data
+        sudo docker volume create sonarqube_logs
+        sudo docker volume create sonarqube_extensions
+        sudo docker run -d --name sonarqube \
+            -p 9000:9000 \
+            -v sonarqube_data:/opt/sonarqube/data \
+            -v sonarqube_logs:/opt/sonarqube/logs \
+            -v sonarqube_extensions:/opt/sonarqube/extensions \
+            sonarqube:lts-community
+        EOF
+    }
+}

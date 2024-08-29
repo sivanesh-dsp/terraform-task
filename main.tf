@@ -17,25 +17,22 @@ module "jenkins_setup" {
 }
 
 
-### Make sure to un-comment these below lines after successfull installation and setup of jenkins
+resource "null_resource" "run_jenkins" {
+  depends_on = [module.jenkins_setup]
 
+  provisioner "local-exec" {
+    command = "sudo docker system prune -f"
+  }
+}
 
-# resource "null_resource" "run_jenkins" {
-#   depends_on = [module.jenkins_setup]
+provider "jenkins" {
+  server_url = "http://localhost:8080/" 
+  username   = "admin"            
+  password   = "admin"                             
+}
 
-#   provisioner "local-exec" {
-#     command = "sudo docker system prune -f"
-#   }
-# }
-
-# provider "jenkins" {
-#   server_url = "http://localhost:8080/" 
-#   username   = "admin"            
-#   password   = "admin"                             
-# }
-
-# resource "jenkins_job" "example" {
-#   depends_on = [module.jenkins_setup]
-#   name       = "poc-pipeline"
-#   template   = file("${path.module}/job.xml")
-# }
+resource "jenkins_job" "example" {
+  depends_on = [module.jenkins_setup]
+  name       = "poc-pipeline"
+  template   = file("${path.module}/job.xml")
+}
